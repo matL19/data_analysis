@@ -17,6 +17,7 @@ zlimit = 0;
 mask = ones(size(z));
 mask_level = [];
 mask_from = [];
+line_color = [0 0 0];
 while length(varargin)>=2
   arg = varargin{1};
   val = varargin{2};
@@ -30,6 +31,8 @@ while length(varargin)>=2
       end
     case {'pumpprobe_style','pumpprobe'}
       flag_pumpprobe = val;
+    case 'line_color'
+        line_color = val;
     case 'mask'
       mask = val;
     case 'mask_level'
@@ -84,8 +87,8 @@ else
   level_list = linspace(-zlimit, zlimit, n_contours+2);
 end
   
-  
-contourf(x,y,z,level_list);
+[M,uh] = contourf(x,y,z,level_list);
+uh.LineColor = line_color;
 colormap(map)
 caxis(ca);
 if flag_pumpprobe

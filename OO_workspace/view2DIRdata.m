@@ -16,8 +16,9 @@ function view2DIRdata(data,range1,range3,varargin)
 N = length(data);
 zlimit = 0;
 n_contours = 20;
+line_color = [0 0 0];
 
-while length(varargin)>=2 %using a named pair
+while length(varargin)>=2 %using a named pairo
     arg = varargin{1};
     val = varargin{2};
     switch lower(arg)
@@ -27,6 +28,11 @@ while length(varargin)>=2 %using a named pair
             n_contours = val;
             if mod(n_contours,2)
                 warning('my2dPlot4: Odd number of contour lines may produce unexpected results!')
+            end
+        case 'line_color'
+            line_color = val;
+            if numel(line_color) ~= 3
+               error('Input color as a 3-element RGB vector')
             end
         otherwise
             warning(['view2DIRdata: unknown option ',arg])
@@ -71,11 +77,9 @@ for kk = 1:N;
         ca = [-zlimit zlimit];
         level_list = linspace(-zlimit, zlimit, n_contours+2);
     end
-    
-
 
     if kk == 1
-        my2dPlot(x,y,z,'pumpprobe',false,'n_contours',n_contours','zlimit',zlimit);
+        my2dPlot(x,y,z,'pumpprobe',false,'n_contours',n_contours','zlimit',zlimit,'line_color',line_color);
         ax1 = f.Children(2); % right projection
         ax2 = f.Children(1); % top projection
         ax3 = f.Children(3);
