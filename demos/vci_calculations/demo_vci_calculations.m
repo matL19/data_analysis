@@ -41,7 +41,7 @@ lmodes(1).h
 lmodes(1).h_
 
 %% Demo: Kronecker product is a way to represent a tensor product
-v1 = [1; 2; 3]
+v1 = [1; 2; 3; 4]
 v2 = [5; 6; 7]
 
 v1v2 = kron(v1,v2)
@@ -213,11 +213,10 @@ clear f
 
 pmodes.H_ = H_;
 
+%[V,E] = analyzeEnergyLevels(lmodes,pmodes,'ind',1:6);
+%
 %
 target = sort([0 1889.184 1947.621 3767.517 3883.911 3813.698]');
-
-fprintf(1,'\n\n')
-fprintf(1,'%f \t%f \t%f\n',[target E(1:6)-E(1) (-target + E(1:6)-E(1))]')
 
 %
 % setup response
@@ -241,6 +240,8 @@ lineshape = chooseLineshapeFunction(roptions.c2form,roptions.c2params);
 roptions.g = lineshape.g;
 
 [V,E]=analyzeEnergyLevels(lmodes,pmodes,'roptions',roptions);
+fprintf(1,'\n\n')
+fprintf(1,'%f \t%f \t%f\n',[target E(1:6)-E(1) (-target + E(1:6)-E(1))]')
 
 %
 % calculate response
