@@ -61,10 +61,10 @@ v1v2 = kron(v1,v2)
 
 
 %%
-a = sqrt(2)/2;
-v1v2 = [0 a 0 a 0 0 0 0 0]'
-
-displayCoeffMatrix(v1v2,lmodes) 
+% a = sqrt(2)/2;
+% v1v2 = [0 a 0 a 0 0 0 0 0]'
+% 
+% displayCoeffMatrix(v1v2,lmodes) 
 
 %%
 
