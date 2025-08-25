@@ -1,13 +1,10 @@
-classdef aRFWAOBnd < aRFBnd
+classdef aRF1D < aRFBnd
     
     
     properties
         %
         %  Most properties should be defined in the superclass aRF
         %
-        
-        % enumerating diagrams
-        diagram;
         
         dyn = additionalDynamics; %structure/class) for additional dynamics
         dynOther = additionalDynamics; %for dynamics shared paramters
@@ -23,7 +20,7 @@ classdef aRFWAOBnd < aRFBnd
     end
     
     methods
-        function obj = aRFWAOBnd(options)
+        function obj = aRF1D(options)
             obj@aRFBnd(options);
         end
         
@@ -37,9 +34,9 @@ classdef aRFWAOBnd < aRFBnd
             obj = obj.calcAnhShift(obj.paramStruct);
             obj = obj.calcTDM(obj.paramStruct);
             obj = obj.calcAdditionalDynamics;
-            obj=obj.calcDiagramsFreq(obj.n_zp);
+            obj = obj.calcDiagramsFreq(obj.n_zp);
             obj = obj.addDiagrams;
-            obj=obj.resample(ii);
+            obj = obj.resample(1);
 
         end
         
@@ -49,10 +46,7 @@ classdef aRFWAOBnd < aRFBnd
         function obj = setupResponseFunctions(obj)
             
             obj.n_diagrams = 1;
-            
-            %have to initialize the first one without an index (don't know
-            %why)
-            obj.diagram = feynmanDiagram();
+            obj.diagrams = feynmanDiagram1D();
             
         end
         
@@ -64,7 +58,7 @@ classdef aRFWAOBnd < aRFBnd
             
             R =  exp(-g(obj.T1));
             
-            obj.diagram(1).R = R;
+            obj.diagrams(1).R = R;
         end
         
         function obj = calcPhaseShift(obj,~)
@@ -76,7 +70,7 @@ classdef aRFWAOBnd < aRFBnd
         function obj = calcTDM(obj,p)
             mu_01_2 = p.mu01sq;
             
-            obj.diagram(1).R = mu_01_2^2.*obj.diagram(1).R;
+            obj.diagrams(1).R = mu_01_2.*obj.diagrams(1).R;
         end
         
         function obj = calcAnhShift(obj,~)
@@ -92,7 +86,7 @@ classdef aRFWAOBnd < aRFBnd
                     f = obj.dyn(ii).fun_array{jj};
                     ind = obj.dyn(ii).ind_array{jj};
                     for kk = 1:length(ind)
-                        obj.diagram(ind(kk)).R = f(obj.T1,p).*obj.diagram(ind(kk)).R;
+                        obj.diagrams(ind(kk)).R = f(obj.T1,p).*obj.diagrams(ind(kk)).R;
                     end
                 end
             end
@@ -102,7 +96,7 @@ classdef aRFWAOBnd < aRFBnd
                     f = obj.dynOther(ii).fun_array{jj};
                     ind = obj.dynOther(ii).ind_array{jj};
                     for kk = 1:length(ind)
-                        obj.diagram(ind(kk)).R = f(obj.T1,p).*obj.diagram(ind(kk)).R;
+                        obj.diagrams(ind(kk)).R = f(obj.T1,p).*obj.diagrams(ind(kk)).R;
                     end
                 end
             end
