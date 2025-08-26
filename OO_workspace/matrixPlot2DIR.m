@@ -90,7 +90,7 @@ for ii = 1:m
             ca = [-zlimit zlimit];
             level_list = linspace(-zlimit, zlimit, n_contours+2);
         end
-        contourf(had(ii,jj),x,y,z,level_list);
+       contourf(had(ii,jj),x,y,z,level_list);
         axis equal
         line([x(1) x(end)],[x(1) x(end)],'Color',[0 0 0]);
         axis([x(1) x(end) y(1) y(end)])

@@ -4,11 +4,19 @@ function out = calibrateILConc(data,freq,ref1,freq1,ref2,freq2,varargin)
 %     reference 2.
 %     Function call of the form:
 %     M = calibrateILConc(data,freq,ref1,freq1,ref2,freq2)
+%
 % Optional inputs include
+%
 % calibrateILConc(...,"manual",X)
 % This calibrates the input spectrum according to the values provided in X,
 % instead of using the GUI click-input method.
 % where X = [ref_freq1 baseline_freq1 ref_freq2 baseline_freq2]
+%
+% calibrateILConc(...,"scale",X)
+% This scales each diagnostic peak by a certain value. Useful for adjusting
+% mole ratios when diagnostic peaks are not 1:1. X is a 2x1 row vector with
+% a scale factor for each of the two peaks.
+% X = [ref1_scale ref2_scale]
 %
 %     arguments
 %         data double
@@ -19,12 +27,15 @@ function out = calibrateILConc(data,freq,ref1,freq1,ref2,freq2,varargin)
 %         freq2 (:,1) double
 %         varargin
 %     end
-
+%
 %     if freq ~= freq1 & freq ~= freq2
 %         error('All three frequency axes must be the same.')
 %         return
 %     end
 
+inputmethod = "click";
+ref1_scale = 1;
+ref2_scale = 1;
 while numel(varargin) >= 2
     var = varargin{1};
     val = varargin{2};
@@ -32,13 +43,13 @@ while numel(varargin) >= 2
         case "manual"
             inputmethod = "manual";
             calibration_pts = val;
+        case "scale"
+            ref1_scale = val(1);
+            ref2_scale = val(2);
         otherwise
             error("Invalid name/value pair")
     end
     varargin = varargin(3:end);
-end
-if ~exist('inputmethod')
-    inputmethod = "click";
 end
 if inputmethod == "click"
     str = {'Select your peaks IN THIS ORDER:',...
@@ -105,6 +116,7 @@ idx1 = find(freq >= X(3)-dw/2 & freq <= X(3)+dw/2);
 idx2 = find(freq >= X(4)-dw/2 & freq <= X(4)+dw/2);
 absorbance(2) = data(idx1) - data(idx2);
 
+absorbance = absorbance.*[ref1_scale ref2_scale]';
 concs = epsilon\absorbance;
 fractions = 1/sum(concs)*concs;
 
