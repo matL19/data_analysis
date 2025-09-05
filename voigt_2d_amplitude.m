@@ -28,7 +28,10 @@ s_a = da / 2.355;  % about 1 point wide ~ delta fxn
 G = exp(-D.^2 ./ (2 * w_g^2)) .* exp(-A.^2 ./ (2 * s_a^2));
 
 % convolution
-F = real(ifft2(fft2(G).*fft2(L)));
+G_hat = fft2(G);
+G_hat = G_hat ./ G_hat(1);
+L_hat = fft2(L);
+F = real(ifft2(G_hat .* L_hat));
 
 amplitude = interp2(X, Y, F, x0, y0, method);
 F = F ./ amplitude;
