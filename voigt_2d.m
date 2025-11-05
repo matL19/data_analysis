@@ -4,14 +4,14 @@ L = (w_l / pi)^2 ./ (w_l^2 + (x - x0).^2) ./ (w_l^2 + (y - y0).^2);
 n_x = length(x);
 dx = x(1, 2) - x(1, 1);
 if mod(n_x, 2) == 0
-    xx = (-n_x / 2: n_x / 2 - 1) * dx + dx / 2;
+    xx = (-n_x / 2: n_x / 2 - 1) * dx;
 else
     xx = (-floor(n_x / 2): floor(n_x / 2)) * dx;
 end
 n_y = length(y);
 dy = y(2) - y(1);
 if mod(n_y, 2) == 0
-    yy = (-n_y / 2: n_y / 2 - 1) * dy + dy / 2;
+    yy = (-n_y / 2: n_y / 2 - 1) * dy;
 else
     yy = (-floor(n_y / 2): floor(n_y / 2)) * dy;
 end
