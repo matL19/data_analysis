@@ -561,6 +561,84 @@ classdef labarchivesCallObj
 
         end
         
+        function obj = updateEntry(obj,filename,varargin)
+            % update an entry on the current page
+            %
+            % obj = obj.updateEntry(entry_num)
+            %
+            % updates file fname.mat on the current page. Create the
+            % attachment if it doesn't yet exist.
+            
+            default_caption = '';
+            p = inputParser;
+            addRequired(p,'filename');
+            addParameter(p,'caption',default_caption);
+            parse(p,filename,varargin{:});
+            
+            caption = p.Results.caption;
+            
+            
+            % load the current page entries
+            obj = obj.loadEntriesForPage();
+            
+            % initialize an empty array for entry id
+            eid = [];
+            
+            % search for the entry with the same name as the input filename
+            % and return the entry id of that file.
+            if length(obj.entries) == 1
+                if strcmp(obj.entries.attach_dash_file_dash_name.Text, filename)
+                    eid = obj.entries.eid.Text;
+                end
+            else
+                for ii = 1:length(obj.entries)
+                    if strcmp(obj.entries{ii}.attach_dash_file_dash_name.Text, filename)
+                        eid = obj.entries{ii}.eid.Text;
+                    end
+                end
+            end
+            
+            % if the entry id is not empty follow this procedure to update
+            % the file uploaded to the entry
+            if ~isempty(eid)
+                %load file contents
+                file_contents = myReadFileContents(obj,filename);
+            
+                % these should be updated for each call
+                obj.api_class = 'api/entries/';
+                obj.api_method_called = 'update_attachment';
+                obj.api_method_specific = ...
+                    sprintf('uid=%s&eid=%s&filename=%s&caption=%s',...
+                    obj.uid,eid,filename,urlencode(caption));
+
+                obj = obj.buildCallString;
+                obj = obj.buildAuthenticationString;
+                obj = obj.buildRestCallString;
+
+                if ispc
+                    opt = weboptions('MediaType','application/octet-stream');
+                elseif ismac
+                    opt = weboptions('MediaType','application/octet-stream',...
+                        'CharacterEncoding','ISO-8859-1');
+                else
+                    opt = weboptions('MediaType','application/octet-stream');
+                end
+                
+                obj.response = webwrite(obj.rest_call_string,file_contents,opt);
+
+                obj = obj.responseXml2Struct;
+            else
+                % if the entry id (eid) is empty then none of the entries were
+                % found to have the same filename as the input filename and
+                % the function will just upload the file as a new entry.
+                obj.addAttachment(filename,varargin{:});
+            end
+            
+            % update the current page entries 
+            obj = obj.loadEntriesForPage;
+
+        end
+        
         function obj = addAttachment(obj,filename,varargin)
             % attach a file to the current page
             %
@@ -682,7 +760,6 @@ classdef labarchivesCallObj
             obj = obj.loadEntriesForPage;
 
         end
-
         
         function file_contents = myReadFileContents(obj,filename)
             % read from file
