@@ -25,6 +25,22 @@ arguments (Output)
     p
 end
 
+% Warn about values <= 0 for log scale and omit culprit values.
+if options.XScale == "log" && any(x <= 0)
+    warning("x vector has data <= 0 which is incompatible with a log scale. These values will be omitted from the plot.")
+    x_ind = (x > 0);
+    x = x(x_ind);
+    y = y(x_ind);
+    err = err(x_ind);
+end
+if options.YScale == "log" && any(y <= 0)
+    warning("y vector has data <= 0 which is incompatible with a log scale. These values will be omitted from the plot.")
+    y_ind = (y > 0);
+    x = x(y_ind);
+    y = y(y_ind);
+    err = err(y_ind);
+end
+
 ax = options.ax;
 
 [xbar, ybar] = determine_fill_border(x, y, err, options);
