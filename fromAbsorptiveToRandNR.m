@@ -3,9 +3,9 @@ function out = fromAbsorptiveToRandNR(varargin)
 % go from PP to R and NR spectra and sum
 
 if length(varargin)<3
-    error(['wrong number of input parameters call as',
-        'result = fromAbsorptiveToRandNR(w1,w3,absorptive,options);',...
-        ' or ',
+    error(['wrong number of input parameters call as \n' ...
+        'result = fromAbsorptiveToRandNR(w1,w3,absorptive,options); \n',...
+        'or \n' ...
         'result = fromAbsorptiveToRandNR(d.w1,d.w3,d.R,options);'])
 end
 options = varargin{end};
@@ -46,16 +46,15 @@ for i_loop = 1:n_spectra
     
     % put the spectrum in a bigger freq space in w3
     % is this needed???
-    %ind_mid = floor((ind1(end)+ind1(1))/2);
-    %dw = w1(2)-w1(1);
-    %ind1_ = (1:opt.n_w) - opt.n_w/2 + ind_mid;
-    %ind1_ = ind1_(ind1_>0&ind1_<=length(ind1));
-    %w1_ = ind1_*dw + w1(ind_mid);
-    
-    %
-    %[W1,W3] = meshgrid(w1_,w1_);
+    ind_mid = floor((ind1(end)+ind1(1))/2);
+    dw = w1(2) - w1(1);
+    ind1_ = (0:opt.n_w - 1);
+    w1_ = ind1_*dw + w1(ind_mid) - opt.n_w*dw / 2;
+
+
+    [W1,W3] = meshgrid(w1_,w1_);
     %x = w1(ind1_);
-    [W1,W3] = meshgrid(w1,w1);
+    %[W1,W3] = meshgrid(w1,w1);
     x = w1(ind1);
     y = w3(ind3);
     z = real(absorptive(ind3,ind1)*exp(-1i*opt.phase));
@@ -71,8 +70,8 @@ for i_loop = 1:n_spectra
     %
     spec = ifftshift(big_spec);
     
-    %n_t = opt.n_w/2;
-    n_t = floor(length(x)/2);
+    n_t = opt.n_w/2;
+    %n_t = floor(length(x)/2);
     t = 0:(2*n_t-1);
     w = x;
     
@@ -99,10 +98,10 @@ for i_loop = 1:n_spectra
     S2 = fftshift(S2);
     
     if opt.flag_plot
-        figure,clf,my2dPlot(w,w,real(S1),'pumpprobe',false)
+        figure,clf,my2dPlot(W1,W3,real(S1),'pumpprobe',false)
         title('Extracted Re[R_r]')
         
-        figure,clf,my2dPlot(w,w,real(S2),'pumpprobe',false)
+        figure,clf,my2dPlot(W1,W3,real(S2),'pumpprobe',false)
         title('Extracted Re[R_{nr}]')
     end
     
@@ -110,12 +109,12 @@ for i_loop = 1:n_spectra
     S = S1 + S2;
     
     if opt.flag_plot
-        figure,clf,my2dPlot(w,w,real(S),'pumpprobe',false)
+        figure,clf,my2dPlot(W1,W3,real(S),'pumpprobe',false)
         title('Absorptive spectrum Re[R_{r} + R_{nr}]')
     end
     
-    out(i_loop).w1 = w;
-    out(i_loop).w3 = w;
+    out(i_loop).w1 = w1_;
+    out(i_loop).w3 = w1_;
     out(i_loop).S = S;
     out(i_loop).R = S1;
     out(i_loop).NR = S2;
