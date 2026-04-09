@@ -60,7 +60,7 @@ w = s.w;
 
 S1 = ifft2(spec);
 figure(101),clf,my2dPlot(t,t,real(S1),'pumpprobe',false) 
-%%
+
 
 S1 = fliplr(circshift(S1,[0 -1]));
 S2 = ifft2(spec);
@@ -72,8 +72,9 @@ S2(:,n_t+1:end) = 0;
 S2(n_t+1:end,:) = 0;
 
 figure(101),clf,my2dPlot(t,t,real(S1),'pumpprobe',false) 
-figure(102),clf,my2dPlot(t,t,real(S2),'pumpprobe',false) 
-%%
+figure(102),clf,my2dPlot(t,t,real(S2),'pumpprobe',false)
+
+
 S1 = sgrsfft2(S1);
 S1 = fliplr(circshift(S1,[0 -1]));
 S1 = fftshift(S1);
@@ -82,10 +83,10 @@ S2 = sgrsfft2(S2);
 S2 = fftshift(S2);
 
 figure(103),clf,my2dPlot(w,w,real(S1),'pumpprobe',false) 
-title('Extracted R_r')
+title('Extracted R_{nr}')
 
 figure(104),clf,my2dPlot(w,w,real(S2),'pumpprobe',false) 
-title('Extracted R_{nr}')
+title('Extracted R_{r}')
 
 
 %% calculate R and NR from absorptive spectrum
@@ -196,7 +197,7 @@ figure(1),clf
 my2dPlot(d.w1(ind1),d.w3(ind3),d.R(ind3,ind1),'pumpprobe',false)
 title(sprintf('t_2 = %8.1f ps',d.t2/1000))
 
-
+%%
 % defaults
 options.n_w = 256; %number of freq points
 options.phase = 0;
@@ -206,6 +207,7 @@ options.flag_plot = true;
 options.range1 = range1;
 options.range3 = range3;
 
+%%
 result = fromAbsorptiveToRandNR(d.w1,d.w3,d.R,options);
 
 %% try phasing
